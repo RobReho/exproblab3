@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<launch>
+
+    <include file="$(find erl3)/launch/gmapping.launch"/>
+    <include file="$(find erl3)/launch/move_base.launch"/>
+
+    <node name="move_arm.cpp" pkg="erl3" type="move_arm" />
+    <node name="myhints" pkg="erl3" type="myhints"/>
+    <node name="aruco_marker_publisher" pkg="aruco_ros" type="marker_publisher"/>
+    <!--node name="recovery_plan" pkg="erl3" type="recovery_plan" output="screen"/-->
+    <node pkg="armor" type="execute" name="armor_service" args="it.emarolab.armor.ARMORMainService"/>
+    <node name="final_oracle" pkg="erl3" type="final_oracle"/>
+    
+</launch>
