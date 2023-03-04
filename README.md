@@ -25,47 +25,34 @@ Default pose:
 ### ROS services
 The nodes communicate with some customized services:
 - "/ask_solution" of type Consistent
-- "/checkconsistency" of type Consistent
+- "/arm_pose" of type Pose
 - "/good_hint" of type Bool
 - "/oracle_solution" of type Oracle
-- "/oracle_hint" of type ErlOracle
+- "/oracle_hint" of type ErlOracle  
+
+and the customized message:
+- "/ID" of type Id  
 
 ### State Machine
-In this iteration, the flow of the game is planned by ROSplan services. ROSplan uses a PDDL file that defines a planning domain where the robot must move between waypoints and an oracle to solve the mystery. The robot can collect hints at waypoints, verify that the collected hypothesis is consistent, and eventually visit an oracle to check if its hypothesis is correct.
-![Alt Text](https://github.com/RobReho/exproblab2/blob/main/media/erl2_sm.PNG)
-Every state is defines by a durative action in the PDDL domain. They are "leave_oracle", "collect_hint", "go_to_next_point", "complete_query", and "solution_query". 
-- "leave_oracle" represents the robot leaving an oracle and moving to a waypoint.
-- "collect_hint" represents the robot collecting a hint at a waypoint.
-- "go_to_next_point" represents the robot moving from one waypoint to another.
-- "complete_query" represents the robot quering the ontology for consistency after hints have been taken from all waypoints.
-- "solution_query" represents the robot checking whether its hypothesis is correct by visiting the oracle and receiving the solution.
+In this iteration, the flow of the game is planned by Smach state machine. The state machine is implemented in the node "cluedo_state machine" in the file cluedo_sm.py.
+![Alt Text](https://github.com/RobReho/exproblab3/blob/main/media/erl3_sm.PNG)
+The implemented states are:  
+- INIT: Initialization of the game. The robot arm gets into the exploring position. ARMOR services are called to get the ontology ready. The state is executed again in case the hints fail to be uploaded to the owl file, and proceeds to the execution of the state "EXPLORE ROOMS" otherwise.
+- INIT: Initialization of the game. The robot arm gets into the exploring position. ARMOR services are called to get the ontology ready. The state is executed again in case the hints fail to be uploaded to the owl file, and proceeds to the execution of the state "EXPLORE ROOMS" otherwise.
+- COLLECT HINTS: The robot checks if any ID has collected enough hints to formulate a hypothesis. If so, the state "MAKE HYPOTHESIS" is executed. Otherwise, it goes back to the state "EXPLORE ROOMS".
+- MAKE HYPOTHESIS: In this state, groups of 3 or more hints are uploaded to the ontology and checked for completeness and inconsistency. The ID of the consistent hypothesis is returned. If at least one ID has returned a consistent hypothesis, the state "REACH ORACLE" is executed. Otherwise, the robot continues the exploration by returning to the state "EXPLORE ROOMS".
+- REACH ORACLE: The robot reaches the oracle position [0,-1] using the same action server as the state "EXPLORE ROOMS". It is repeated if it fails to reach the position, otherwise, the state "HYPOTHESIS CHECK" is executed.
+- HYPOTHESIS CHECK: Gets the IDs relative to the consistent hypothesis and calls the /oracle_solution server to compare them with the winning ID. If one of the IDs is the same as the winning ID, the game ends. Otherwise, the robot goes back to the "EXPLORE ROOMS" state.  
 
-### Compontents Diagram
-![Alt Text](https://github.com/RobReho/exproblab2/blob/main/media/erl2_comp.PNG)  
-n this architecture, it is composed of six C++ nodes that are the action interfaces of ROSplan, one C++ node that implements the oracle behavior that generates hints and gives the solution ID. Other three nodes implement the necessary services for the game.
-The "plan_update" node calls the ROSplan servers to dispatch a plan and start the game. As long as the dispatch response is false, the ROSplan services are called, and the knowledge base is updated by deleting the "hint_taken" and "hypothesis_consistent" predicates to restart with the initial conditions in case an action fails.
-The node "simulation" is the oracle of the game. It generates hints relative to six different IDs. One of the IDs is associated with the winning hypothesis, while all the others generate random hints that can sometimes also be defective. The node also implements the server callback that gives back the winning ID.
 
-The node "myhint" handles the processing of the hints and the ARMOR requests. It subscribes to the topic /oracle_hint and receives all the hints detected by the robot. The hint is examined, and only the well-formed hints are advertised to the topic /good_hint. The node is also the client for the service /oracle_solution as it asks for the winning ID and compares it with the consistent ID from the ontology. It also synchronizes the communication with the ROSplan interfaces, returning booleans as a result for the ROSplan actions.
+### Temporal Diagram
+![Alt Text](https://github.com/RobReho/exproblab3/blob/main/media/erl3_temp.PNG)  
+This architecture is mainly composed of three nodes that implement the behaviour of the robot and the oracle:
+- The "Cluedo state machine" implements the states of the robot. Its content is better described in the section above.
+- The "final oracle" node implements the behaviour of the oracle, it generates hints relative to six different IDs. One of the IDs is associated with the winning hypothesis, while all the others generate random hints that can sometimes also be defective. The node also implements the server callback that gives back the winning ID.
+- The "myhints" The node subscribes to the topic /aruco_marker_publisher/ID. When an ID is published on that topic, if it is a new ID, it will retrieve the corresponding hint calling the service server /oracle_hint. Then hint will then be inspected: only the properly formed hints will go to the state machine. The good hints are published on the topic /good_hint and will be retrieved there by the state machine.
+ 
 
-The node "go_to_oracle" enables the robot to move to a specific location while facing a designated direction. Initially, the robot aligns itself with the desired direction and progresses towards the goal. After arriving at the target coordinates, the robot adjusts its orientation by rotating itself to the correct position. The angular and linear velocities are determined by the user_interface node and are transmitted via the /cmd_vel topic. If the action server's client cancels the goal, all velocities are set to zero, and the action server is preempted. This action service is called by all the ROSplan nodes that require the robot to move between points, which are "LeaveOracle", "GoToNextPoint", and "GoToOracle".
-
-The node FromHomeAction.cpp implements the action defined in the domain as move_from_home. This action implements the motion of the robot from the home position to a predefined waypoint. We can see the same behavior from the nodes ToHomeAction.cpp (for the action go_home) and MoveAction.cpp (for the action goto_waypoint). These three nodes implement the exact same behavior, but they are associated with three different actions in the domain since there is the need to recognize the home position with a predicate that needs to be set to true and false when the robot reaches the home position or moves from the home position. All three nodes call the action server go_to_point that is implemented in the node go_to_point.py.
-The node go_to_point.py implements the motion of the robot as an action server; it receives a desired position and orientation and sends the required velocities to the robot. The motion is divided into three phases:
-
-ROSplan action interfaces:  
-
-- LeaveOracle.cpp: Rosplan action called when the planner dispatches the action "leave_oracle". It moves the robot to the position of the first waypoint by calling the action server "go_to_point".  
-
-- CollectHint.cpp: Implements the behavior for the robot when the planner dispatches the action "collect_hint". It moves the arm to catch the hints by calling the MoveIt server.  
-
-- GoToNextPoint.cpp: Rosplan action called when the planner dispatches the action "go_to_next_point". It moves the robot to the desired waypoint retrieved by the ROSPlan dispatch message by calling the action server "go_to_point".  
-
-- CompleteQuery.cpp: Rosplan action called when the planner dispatches the action "complete_query". The callback calls the server of the "/checkcomplete" service to check if there are any IDs that have collected at least three hints and check if they form a consistent hypothesis. The action returns successfully if at least one hypothesis is consistent, it fails otherwise.  
-
-- GoToOracle.cpp: Rosplan action called when the planner dispatches the action "go_to_oracle". It moves the robot to the Oracle position 0.0 by calling the action server "go_to_point".  
-
-- SolutionQuery.cpp: Rosplan action called when the planner dispatches the action "solution_query". It calls the service "/ask_solution" asking the node "myhint" to retrieve the winning ID from the node "simulation" and compare it to the consistent hypothesis saved in the array "cIDs". The action is successful if the IDs are the same, it fails otherwise.
 
 ## Installation and Running
 This project needs some external packages. You can install them in your ROS workspace:  
@@ -102,7 +89,7 @@ In another tab, launch rosplan:
 This last tab is also the interface where the status of the game can be followed.
 
 ## Demo
-A short demo of the execution of the game is avaliable at this [link](https://youtu.be/viMno0NIJpc)
+A short demo of the execution of the game is avaliable at this [link](https://youtu.be/rd2lQpOWQyQ)
 
 ## Working hypothesis and environment.
 ### System features
