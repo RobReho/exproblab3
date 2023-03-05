@@ -423,11 +423,14 @@ class Initialization(smach.State):
     def execute(self, userdata):
         global people_list, weapons_list, places_list,vel_pub
         
+        print("_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_")
+        print("_-_-_-_-_-_-_-_-_-_-C_L_U_E_D_O-_-_-_-_-_-_-_-_-_")
+        print("_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_")
         print('Initializing game:')
        
         # makes the robot assuming the default position
         pose_client("default")
-        print('waiting for armore server')
+        print('waiting for armor server')
         # Wait for ARMOR server
         rospy.wait_for_service("armor_interface_srv") 
         # Init OWL file from Armor server
