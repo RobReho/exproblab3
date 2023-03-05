@@ -1,0 +1,104 @@
+\hypertarget{myhints_8py}{}\doxysection{scripts/myhints.py File Reference}
+\label{myhints_8py}\index{scripts/myhints.py@{scripts/myhints.py}}
+
+
+This node implements the hints processing for the Cluedo game.  
+
+
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \mbox{\hyperlink{myhints_8py_a37971d9e69251ff96d0b5a220260259a}{myhints.\+filter\+\_\+hints}} (hint)
+\begin{DoxyCompactList}\small\item\em /brief filter\+\_\+hints /param hint\+: message of type Erl\+Oracle /return\+: None if the hint is not valid, otherwise publishes the hint to the state machine \end{DoxyCompactList}\item 
+def \mbox{\hyperlink{myhints_8py_a9c5c2876adfc5100ceb2bc4eb54f4908}{myhints.\+retrieve\+\_\+hint}} (ID)
+\begin{DoxyCompactList}\small\item\em /brief retrieve\+\_\+hint /param ID\+: message of type ID /return\+: message of type Erl\+Oracle \end{DoxyCompactList}\item 
+def \mbox{\hyperlink{myhints_8py_ae3b885d6cc5b31d0b984813047c2e26b}{myhints.\+get\+\_\+\+ID}} (data)
+\begin{DoxyCompactList}\small\item\em /brief get\+\_\+\+ID /param data\+: message of type ID /return\+: None \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{myhints_8py_aadba27b0903af78a36b0677e824d92a5}\label{myhints_8py_aadba27b0903af78a36b0677e824d92a5}} 
+def {\bfseries myhints.\+main} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{myhints_8py_ac67ca38de9d5ed24392dcdafc9d3d950}\label{myhints_8py_ac67ca38de9d5ed24392dcdafc9d3d950}} 
+list {\bfseries myhints.\+people} = \mbox{[}\char`\"{}Miss\+Scarlett\char`\"{}, \char`\"{}Colonel\+Mustard\char`\"{}, \char`\"{}Mrs\+White\char`\"{}, \char`\"{}Mr\+Green\char`\"{}, \char`\"{}Mrs\+Peacock\char`\"{}, \char`\"{}Prof\+Plum\char`\"{}\mbox{]}
+\item 
+\mbox{\Hypertarget{myhints_8py_ae38cb4e616b993919dabdc9600d72399}\label{myhints_8py_ae38cb4e616b993919dabdc9600d72399}} 
+list {\bfseries myhints.\+weapons} = \mbox{[}\char`\"{}candlestick\char`\"{}, \char`\"{}dagger\char`\"{}, \char`\"{}lead\+Pipe\char`\"{}, \char`\"{}revolver\char`\"{}, \char`\"{}rope\char`\"{}, \char`\"{}spanner\char`\"{}\mbox{]}
+\item 
+\mbox{\Hypertarget{myhints_8py_ae76626a64c8672494d2e45c58b64a887}\label{myhints_8py_ae76626a64c8672494d2e45c58b64a887}} 
+list {\bfseries myhints.\+places} = \mbox{[}\char`\"{}conservatory\char`\"{}, \char`\"{}lounge\char`\"{}, \char`\"{}kitchen\char`\"{}, \char`\"{}library\char`\"{}, \char`\"{}hall\char`\"{}, \char`\"{}study\char`\"{}, \char`\"{}bathroom\char`\"{}, \char`\"{}dining\+Room\char`\"{}, \char`\"{}billiard\+Room\char`\"{}\mbox{]}
+\item 
+\mbox{\Hypertarget{myhints_8py_af4c8f122fabf696d82cf1d05493a3883}\label{myhints_8py_af4c8f122fabf696d82cf1d05493a3883}} 
+list {\bfseries myhints.\+hints} = people + weapons + places
+\item 
+\mbox{\Hypertarget{myhints_8py_a24250ad81702ac4d999460fb58988041}\label{myhints_8py_a24250ad81702ac4d999460fb58988041}} 
+{\bfseries myhints.\+hint\+\_\+pub} = None
+\item 
+\mbox{\Hypertarget{myhints_8py_a55c84504dd65ba8e58f3d399a96e7d2a}\label{myhints_8py_a55c84504dd65ba8e58f3d399a96e7d2a}} 
+list {\bfseries myhints.\+I\+Ds} = \mbox{[}0\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+This node implements the hints processing for the Cluedo game. 
+
+\begin{DoxyAuthor}{Author}
+Roberta Reho 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+1.\+0 
+\end{DoxyVersion}
+\begin{DoxyDate}{Date}
+04/03/2023
+\end{DoxyDate}
+Subscribes to\+: ~\newline
+ /aruco\+\_\+marker\+\_\+publisher/\+ID
+
+Publishes to\+: ~\newline
+ /good\+\_\+hint
+
+Serivces\+: ~\newline
+ None
+
+Client Services\+: ~\newline
+ None
+
+Action Services\+: ~\newline
+ None
+
+Description\+: ~\newline
+ The node subscribes to the topic /aruco\+\_\+marker\+\_\+publisher/\+ID When an ID is published on that topic, if it is a new ID, it will retrieve the corresponding hint calling the service server /oracle\+\_\+hint. Then hint will then be inspected\+: only the properly formed hints will go to the state machine. The good hints are published on the topic /good\+\_\+hint and will be retrieved there by the state machine 
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{myhints_8py_a37971d9e69251ff96d0b5a220260259a}\label{myhints_8py_a37971d9e69251ff96d0b5a220260259a}} 
+\index{myhints.py@{myhints.py}!filter\_hints@{filter\_hints}}
+\index{filter\_hints@{filter\_hints}!myhints.py@{myhints.py}}
+\doxysubsubsection{\texorpdfstring{filter\_hints()}{filter\_hints()}}
+{\footnotesize\ttfamily def myhints.\+filter\+\_\+hints (\begin{DoxyParamCaption}\item[{}]{hint }\end{DoxyParamCaption})}
+
+
+
+/brief filter\+\_\+hints /param hint\+: message of type Erl\+Oracle /return\+: None if the hint is not valid, otherwise publishes the hint to the state machine 
+
+Checks if the hint is well formed, if so it publshes it on the topic /good\+\_\+hint \mbox{\Hypertarget{myhints_8py_ae3b885d6cc5b31d0b984813047c2e26b}\label{myhints_8py_ae3b885d6cc5b31d0b984813047c2e26b}} 
+\index{myhints.py@{myhints.py}!get\_ID@{get\_ID}}
+\index{get\_ID@{get\_ID}!myhints.py@{myhints.py}}
+\doxysubsubsection{\texorpdfstring{get\_ID()}{get\_ID()}}
+{\footnotesize\ttfamily def myhints.\+get\+\_\+\+ID (\begin{DoxyParamCaption}\item[{}]{data }\end{DoxyParamCaption})}
+
+
+
+/brief get\+\_\+\+ID /param data\+: message of type ID /return\+: None 
+
+Callback for ID messages Gets ID of the Marker detected by the cameras \mbox{\Hypertarget{myhints_8py_a9c5c2876adfc5100ceb2bc4eb54f4908}\label{myhints_8py_a9c5c2876adfc5100ceb2bc4eb54f4908}} 
+\index{myhints.py@{myhints.py}!retrieve\_hint@{retrieve\_hint}}
+\index{retrieve\_hint@{retrieve\_hint}!myhints.py@{myhints.py}}
+\doxysubsubsection{\texorpdfstring{retrieve\_hint()}{retrieve\_hint()}}
+{\footnotesize\ttfamily def myhints.\+retrieve\+\_\+hint (\begin{DoxyParamCaption}\item[{}]{ID }\end{DoxyParamCaption})}
+
+
+
+/brief retrieve\+\_\+hint /param ID\+: message of type ID /return\+: message of type Erl\+Oracle 
+
+Service client for /oracle\+\_\+hint and retrieves hint corresponding to the ID. Calls function \mbox{\hyperlink{myhints_8py_a37971d9e69251ff96d0b5a220260259a}{filter\+\_\+hints()}} 

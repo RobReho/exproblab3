@@ -1,0 +1,80 @@
+\hypertarget{move__arm_8cpp}{}\doxysection{src/move\+\_\+arm.cpp File Reference}
+\label{move__arm_8cpp}\index{src/move\_arm.cpp@{src/move\_arm.cpp}}
+
+
+this node implements the configuration poses of the robot.  
+
+
+{\ttfamily \#include $<$ros/ros.\+h$>$}\newline
+{\ttfamily \#include $<$moveit/move\+\_\+group\+\_\+interface/move\+\_\+group\+\_\+interface.\+h$>$}\newline
+{\ttfamily \#include $<$erl3/\+Pose.\+h$>$}\newline
+Include dependency graph for move\+\_\+arm.\+cpp\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{move__arm_8cpp__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{move__arm_8cpp_a8484ca3e8f39fbc17e4d83981cdb4f0c}{move\+Arm}} (erl3\+::\+Pose\+::\+Request \&req, erl3\+::\+Pose\+::\+Response \&res)
+\begin{DoxyCompactList}\small\item\em Callback function of the arm\+\_\+pose service. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{move__arm_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}\label{move__arm_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}} 
+int {\bfseries main} (int argc, char $\ast$$\ast$argv)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+this node implements the configuration poses of the robot. 
+
+\begin{DoxyAuthor}{Author}
+Roberta Reho 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+1.\+0 
+\end{DoxyVersion}
+\begin{DoxyDate}{Date}
+04/03/2023
+\end{DoxyDate}
+Subscribes to\+: ~\newline
+ None
+
+Publishes to\+: ~\newline
+ None
+
+Serivces\+: ~\newline
+ arm\+\_\+pose
+
+Client Services\+: ~\newline
+ None
+
+Action Client\+: ~\newline
+ None
+
+Description\+: ~\newline
+ This node implements the callback function of the arm\+\_\+pose service that moves the robot arm to a specified position. 
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{move__arm_8cpp_a8484ca3e8f39fbc17e4d83981cdb4f0c}\label{move__arm_8cpp_a8484ca3e8f39fbc17e4d83981cdb4f0c}} 
+\index{move\_arm.cpp@{move\_arm.cpp}!moveArm@{moveArm}}
+\index{moveArm@{moveArm}!move\_arm.cpp@{move\_arm.cpp}}
+\doxysubsubsection{\texorpdfstring{moveArm()}{moveArm()}}
+{\footnotesize\ttfamily bool move\+Arm (\begin{DoxyParamCaption}\item[{erl3\+::\+Pose\+::\+Request \&}]{req,  }\item[{erl3\+::\+Pose\+::\+Response \&}]{res }\end{DoxyParamCaption})}
+
+
+
+Callback function of the arm\+\_\+pose service. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em req} & pose request \\
+\hline
+{\em res} & pose response \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\+: true
+\end{DoxyReturn}
+This function the callback function of the arm\+\_\+pose service that moves the robot arm to a specified position. It uses the Move\+It library and sets various parameters for planning and execution, including the planner ID, planning time, and goal tolerances. The function returns true if the arm is successfully moved to the specified position false otherwise. 
