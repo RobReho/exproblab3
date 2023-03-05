@@ -41,7 +41,7 @@
 #                   the game is not over yet.
 #                   Procedes to the execution of the state "COLLECT HINTS" when the robot gets to
 #                   the centre of the room.
-# -  COLLECT HINTS: The robot checks if any ID collected enough hints to formulate a hypothesis.
+# - COLLECT HINTS: The robot checks if any ID collected enough hints to formulate a hypothesis.
 #                   If so, the state "MAKE HYPOTHESIS" is executed, otherwise it goes back to 
 #                   the state "EXPLORE ROOMS".
 # - MAKE HYPOTHESIS: In this state the groups of 3 or more hints are uploaded to the ontology and 
