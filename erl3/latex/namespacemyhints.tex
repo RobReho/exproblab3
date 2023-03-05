@@ -1,0 +1,106 @@
+\hypertarget{namespacemyhints}{}\doxysection{myhints Namespace Reference}
+\label{namespacemyhints}\index{myhints@{myhints}}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \mbox{\hyperlink{namespacemyhints_a37971d9e69251ff96d0b5a220260259a}{filter\+\_\+hints}} (hint)
+\begin{DoxyCompactList}\small\item\em /brief filter\+\_\+hints /param hint\+: message of type Erl\+Oracle /return\+: None if the hint is not valid, otherwise publishes the hint to the state machine \end{DoxyCompactList}\item 
+def \mbox{\hyperlink{namespacemyhints_a9c5c2876adfc5100ceb2bc4eb54f4908}{retrieve\+\_\+hint}} (ID)
+\begin{DoxyCompactList}\small\item\em /brief retrieve\+\_\+hint /param ID\+: message of type ID /return\+: message of type Erl\+Oracle \end{DoxyCompactList}\item 
+def \mbox{\hyperlink{namespacemyhints_ae3b885d6cc5b31d0b984813047c2e26b}{get\+\_\+\+ID}} (data)
+\begin{DoxyCompactList}\small\item\em /brief get\+\_\+\+ID /param data\+: message of type ID /return\+: None \end{DoxyCompactList}\item 
+def \mbox{\hyperlink{namespacemyhints_aadba27b0903af78a36b0677e824d92a5}{main}} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+list \mbox{\hyperlink{namespacemyhints_ac67ca38de9d5ed24392dcdafc9d3d950}{people}} = \mbox{[}\char`\"{}Miss\+Scarlett\char`\"{}, \char`\"{}Colonel\+Mustard\char`\"{}, \char`\"{}Mrs\+White\char`\"{}, \char`\"{}Mr\+Green\char`\"{}, \char`\"{}Mrs\+Peacock\char`\"{}, \char`\"{}Prof\+Plum\char`\"{}\mbox{]}
+\item 
+list \mbox{\hyperlink{namespacemyhints_ae38cb4e616b993919dabdc9600d72399}{weapons}} = \mbox{[}\char`\"{}candlestick\char`\"{}, \char`\"{}dagger\char`\"{}, \char`\"{}lead\+Pipe\char`\"{}, \char`\"{}revolver\char`\"{}, \char`\"{}rope\char`\"{}, \char`\"{}spanner\char`\"{}\mbox{]}
+\item 
+list \mbox{\hyperlink{namespacemyhints_ae76626a64c8672494d2e45c58b64a887}{places}} = \mbox{[}\char`\"{}conservatory\char`\"{}, \char`\"{}lounge\char`\"{}, \char`\"{}kitchen\char`\"{}, \char`\"{}library\char`\"{}, \char`\"{}hall\char`\"{}, \char`\"{}study\char`\"{}, \char`\"{}bathroom\char`\"{}, \char`\"{}dining\+Room\char`\"{}, \char`\"{}billiard\+Room\char`\"{}\mbox{]}
+\item 
+list \mbox{\hyperlink{namespacemyhints_af4c8f122fabf696d82cf1d05493a3883}{hints}} = \mbox{\hyperlink{namespacemyhints_ac67ca38de9d5ed24392dcdafc9d3d950}{people}} + \mbox{\hyperlink{namespacemyhints_ae38cb4e616b993919dabdc9600d72399}{weapons}} + \mbox{\hyperlink{namespacemyhints_ae76626a64c8672494d2e45c58b64a887}{places}}
+\item 
+\mbox{\hyperlink{namespacemyhints_a24250ad81702ac4d999460fb58988041}{hint\+\_\+pub}} = None
+\item 
+list \mbox{\hyperlink{namespacemyhints_a55c84504dd65ba8e58f3d399a96e7d2a}{I\+Ds}} = \mbox{[}0\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{namespacemyhints_a37971d9e69251ff96d0b5a220260259a}\label{namespacemyhints_a37971d9e69251ff96d0b5a220260259a}} 
+\index{myhints@{myhints}!filter\_hints@{filter\_hints}}
+\index{filter\_hints@{filter\_hints}!myhints@{myhints}}
+\doxysubsubsection{\texorpdfstring{filter\_hints()}{filter\_hints()}}
+{\footnotesize\ttfamily def myhints.\+filter\+\_\+hints (\begin{DoxyParamCaption}\item[{}]{hint }\end{DoxyParamCaption})}
+
+
+
+/brief filter\+\_\+hints /param hint\+: message of type Erl\+Oracle /return\+: None if the hint is not valid, otherwise publishes the hint to the state machine 
+
+Checks if the hint is well formed, if so it publshes it on the topic /good\+\_\+hint \mbox{\Hypertarget{namespacemyhints_ae3b885d6cc5b31d0b984813047c2e26b}\label{namespacemyhints_ae3b885d6cc5b31d0b984813047c2e26b}} 
+\index{myhints@{myhints}!get\_ID@{get\_ID}}
+\index{get\_ID@{get\_ID}!myhints@{myhints}}
+\doxysubsubsection{\texorpdfstring{get\_ID()}{get\_ID()}}
+{\footnotesize\ttfamily def myhints.\+get\+\_\+\+ID (\begin{DoxyParamCaption}\item[{}]{data }\end{DoxyParamCaption})}
+
+
+
+/brief get\+\_\+\+ID /param data\+: message of type ID /return\+: None 
+
+Callback for ID messages Gets ID of the Marker detected by the cameras \mbox{\Hypertarget{namespacemyhints_aadba27b0903af78a36b0677e824d92a5}\label{namespacemyhints_aadba27b0903af78a36b0677e824d92a5}} 
+\index{myhints@{myhints}!main@{main}}
+\index{main@{main}!myhints@{myhints}}
+\doxysubsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily def myhints.\+main (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespacemyhints_a9c5c2876adfc5100ceb2bc4eb54f4908}\label{namespacemyhints_a9c5c2876adfc5100ceb2bc4eb54f4908}} 
+\index{myhints@{myhints}!retrieve\_hint@{retrieve\_hint}}
+\index{retrieve\_hint@{retrieve\_hint}!myhints@{myhints}}
+\doxysubsubsection{\texorpdfstring{retrieve\_hint()}{retrieve\_hint()}}
+{\footnotesize\ttfamily def myhints.\+retrieve\+\_\+hint (\begin{DoxyParamCaption}\item[{}]{ID }\end{DoxyParamCaption})}
+
+
+
+/brief retrieve\+\_\+hint /param ID\+: message of type ID /return\+: message of type Erl\+Oracle 
+
+Service client for /oracle\+\_\+hint and retrieves hint corresponding to the ID. Calls function \mbox{\hyperlink{namespacemyhints_a37971d9e69251ff96d0b5a220260259a}{filter\+\_\+hints()}} 
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{namespacemyhints_a24250ad81702ac4d999460fb58988041}\label{namespacemyhints_a24250ad81702ac4d999460fb58988041}} 
+\index{myhints@{myhints}!hint\_pub@{hint\_pub}}
+\index{hint\_pub@{hint\_pub}!myhints@{myhints}}
+\doxysubsubsection{\texorpdfstring{hint\_pub}{hint\_pub}}
+{\footnotesize\ttfamily myhints.\+hint\+\_\+pub = None}
+
+\mbox{\Hypertarget{namespacemyhints_af4c8f122fabf696d82cf1d05493a3883}\label{namespacemyhints_af4c8f122fabf696d82cf1d05493a3883}} 
+\index{myhints@{myhints}!hints@{hints}}
+\index{hints@{hints}!myhints@{myhints}}
+\doxysubsubsection{\texorpdfstring{hints}{hints}}
+{\footnotesize\ttfamily list myhints.\+hints = \mbox{\hyperlink{namespacemyhints_ac67ca38de9d5ed24392dcdafc9d3d950}{people}} + \mbox{\hyperlink{namespacemyhints_ae38cb4e616b993919dabdc9600d72399}{weapons}} + \mbox{\hyperlink{namespacemyhints_ae76626a64c8672494d2e45c58b64a887}{places}}}
+
+\mbox{\Hypertarget{namespacemyhints_a55c84504dd65ba8e58f3d399a96e7d2a}\label{namespacemyhints_a55c84504dd65ba8e58f3d399a96e7d2a}} 
+\index{myhints@{myhints}!IDs@{IDs}}
+\index{IDs@{IDs}!myhints@{myhints}}
+\doxysubsubsection{\texorpdfstring{IDs}{IDs}}
+{\footnotesize\ttfamily list myhints.\+I\+Ds = \mbox{[}0\mbox{]}}
+
+\mbox{\Hypertarget{namespacemyhints_ac67ca38de9d5ed24392dcdafc9d3d950}\label{namespacemyhints_ac67ca38de9d5ed24392dcdafc9d3d950}} 
+\index{myhints@{myhints}!people@{people}}
+\index{people@{people}!myhints@{myhints}}
+\doxysubsubsection{\texorpdfstring{people}{people}}
+{\footnotesize\ttfamily list myhints.\+people = \mbox{[}\char`\"{}Miss\+Scarlett\char`\"{}, \char`\"{}Colonel\+Mustard\char`\"{}, \char`\"{}Mrs\+White\char`\"{}, \char`\"{}Mr\+Green\char`\"{}, \char`\"{}Mrs\+Peacock\char`\"{}, \char`\"{}Prof\+Plum\char`\"{}\mbox{]}}
+
+\mbox{\Hypertarget{namespacemyhints_ae76626a64c8672494d2e45c58b64a887}\label{namespacemyhints_ae76626a64c8672494d2e45c58b64a887}} 
+\index{myhints@{myhints}!places@{places}}
+\index{places@{places}!myhints@{myhints}}
+\doxysubsubsection{\texorpdfstring{places}{places}}
+{\footnotesize\ttfamily list myhints.\+places = \mbox{[}\char`\"{}conservatory\char`\"{}, \char`\"{}lounge\char`\"{}, \char`\"{}kitchen\char`\"{}, \char`\"{}library\char`\"{}, \char`\"{}hall\char`\"{}, \char`\"{}study\char`\"{}, \char`\"{}bathroom\char`\"{}, \char`\"{}dining\+Room\char`\"{}, \char`\"{}billiard\+Room\char`\"{}\mbox{]}}
+
+\mbox{\Hypertarget{namespacemyhints_ae38cb4e616b993919dabdc9600d72399}\label{namespacemyhints_ae38cb4e616b993919dabdc9600d72399}} 
+\index{myhints@{myhints}!weapons@{weapons}}
+\index{weapons@{weapons}!myhints@{myhints}}
+\doxysubsubsection{\texorpdfstring{weapons}{weapons}}
+{\footnotesize\ttfamily list myhints.\+weapons = \mbox{[}\char`\"{}candlestick\char`\"{}, \char`\"{}dagger\char`\"{}, \char`\"{}lead\+Pipe\char`\"{}, \char`\"{}revolver\char`\"{}, \char`\"{}rope\char`\"{}, \char`\"{}spanner\char`\"{}\mbox{]}}
+
