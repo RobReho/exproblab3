@@ -41,7 +41,7 @@
 #include <image_transport/image_transport.h>
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/image_encodings.h>
-#include <std_msgs/Int32.h>
+#include <erl3/Id.h>
 
 class ArucoMarkerPublisher
 {
@@ -89,7 +89,7 @@ public:
     image_pub2_ = it2_.advertise("result2", 1);
     debug_pub1_ = it1_.advertise("debug1", 1);
     debug_pub2_ = it2_.advertise("debug2", 1);
-    pubID = nh_.advertise<std_msgs::Int32>("/ID", 1000);
+    pubID = nh_.advertise<erl3::Id>("/ID", 1000);
     
     nh_.param<bool>("use_camera_info1", useCamInfo1_, false);
     nh_.param<bool>("use_camera_info2", useCamInfo2_, false);
@@ -117,12 +117,14 @@ public:
       mDetector1_.detect(inImage1_, markers1_, camParam1_, marker_size1_, false);
 
 		  std::cout << "The id of the detected marker detected is: ";
+		  erl3::Id msg;
         for (std::size_t i = 0; i < markers1_.size(); ++i)
         {
           std::cout << markers1_.at(i).id << " ";
           
           // publish the ID on rostopic /ID
-          msg = markers1_.at(i).id;
+          msg.ID = markers1_.at(i).id;
+
           pubID.publish(msg);
         }
         std::cout << std::endl;
@@ -181,12 +183,15 @@ public:
       mDetector2_.detect(inImage2_, markers2_, camParam2_, marker_size2_, false);
 
 		    std::cout << "The id of the detected marker detected is: ";
+		    erl3::Id msg;
         for (std::size_t i = 0; i < markers2_.size(); ++i)
         {
           std::cout << markers2_.at(i).id << " ";
           
           // publish the ID on rostopic /ID
-          msg = markers2_.at(i).id;
+
+          msg.ID = markers2_.at(i).id;
+          
           pubID.publish(msg);
         }
         std::cout << std::endl;
