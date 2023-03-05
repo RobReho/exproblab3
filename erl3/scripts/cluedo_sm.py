@@ -1,8 +1,34 @@
 #!/usr/bin/env python3
 
 ## @package erl3
-#  Cluedo state machine
 #
+# \file cluedo_sm.py
+# \brief This node handles the sstate machine of the robot
+# \author Roberta Reho
+# \version 1.0
+# \date 04/03/2023
+#
+# \details
+#
+# Subscribes to: <BR>
+#     /odom
+#     /good_hint
+#
+# Publishes to: <BR>
+#     None
+#
+# Serivces: <BR>
+#     /oracle_hint
+#
+# Client Services: <BR>
+#     /oracle_solution
+#     /arm_pose
+#     /move_base
+#
+# Action Services: <BR>
+#     None
+#
+# Description: <BR>
 #  This is the main component of the game, it handles the phases with a state machine and
 #  communicates with the nodes "myhints", "simulation" and "move_arm".
 #  The implemented states are:
@@ -13,10 +39,9 @@
 #  - EXPLORE ROOMS: The robot reaches the centre of every room through the move_base action server.
 #                   The state is executed again in case the all the rooms have been explored, but 
 #                   the game is not over yet.
-#                   Procedes to the execution of the state "COLLECT HINTS" when the robot get at
+#                   Procedes to the execution of the state "COLLECT HINTS" when the robot gets to
 #                   the centre of the room.
-# -  COLLECT HINTS: The robot moves arountd in the room and to collect hints.
-#                   It checks if any ID collected enough hints to formulate a hypothesis.
+# -  COLLECT HINTS: The robot checks if any ID collected enough hints to formulate a hypothesis.
 #                   If so, the state "MAKE HYPOTHESIS" is executed, otherwise it goes back to 
 #                   the state "EXPLORE ROOMS".
 # - MAKE HYPOTHESIS: In this state the groups of 3 or more hints are uploaded to the ontology and 
@@ -43,8 +68,6 @@ import actionlib
 from os.path import dirname, realpath
 from armor_msgs.msg import * 
 from armor_msgs.srv import * 
-#from cluedo.srv import Hypothesis, Hints, Compare
-#from os.path import dirname, realpath
 
 from erl3.srv import Pose
 from erl2.srv import Oracle
@@ -75,6 +98,7 @@ rooms = [room1, room2, room3, room4, room5, room6]
 
 oracle_position = [0, -1]
 
+# Arrays to store hints belonging to different IDs
 ID0 = []
 ID1 = []
 ID2 = []
@@ -83,9 +107,10 @@ ID4 = []
 ID5 = []
 IDs = [ID0,ID1,ID2,ID3,ID4,ID5]
 
+# counts the hints that have been collected
 count_hints = 0
 
-# robot state variables
+# robot position and orientation
 actual_position = Point()
 actual_position.x = 0
 actual_position.y = 0
@@ -95,7 +120,8 @@ def store_hint(data):
     global count_hints
     IDs[data.ID].append(data.value)
     print("One hint has been stored\n")
-    # debug
+    # show hint that have been stored so far
+    count_hints = count_hints + 1
     print("collected hints: ",count_hints,"/21")
     print("ID0 ",ID0)
     print("ID1 ",ID1)
@@ -103,10 +129,13 @@ def store_hint(data):
     print("ID3 ",ID3)
     print("ID4 ",ID4)
     print("ID5 ",ID5)
-    count_hints = count_hints + 1
+    
     return True
 
-## id_to_natural_language
+## 
+#  /brief id_to_natural_language
+#  /param id: contains the hinst to be expressed
+#  /return: string containing the message
 #  Given the ID it returns the hints in type string
 #  in natural language
 def id_to_natural_language(id):
@@ -126,7 +155,15 @@ def id_to_natural_language(id):
     msg = per+" with the "+wea+" in the "+pla
     return msg
 
-
+## 
+#  /brief Callback function for the odom topic that updates the actual position and yaw.
+#  /param msg: msg The incoming message from the odom topic.
+#  /return: None
+#  This function updates the global variables actual_position and actual_yaw with
+#  the current position and yaw obtained from the incoming message.
+#  The actual position is obtained from the position field of the message's pose field.
+#  The actual yaw is obtained from the orientation field of the message's pose field. 
+#  The orientation is converted from quaternion to Euler angles to obtain the yaw.
 def odom_callback(msg):
     global actual_position, actual_yaw
     
@@ -143,16 +180,12 @@ def odom_callback(msg):
     
     
 
- # armor client (my own with armor class)
-#armor_interface = rospy.ServiceProxy('armor_interface_srv', ArmorDirective)
 # oracle client
 oracle_client =  None
-
+# client for moving the arm
 pose_client = None
-# RoomID client
-#roomID_client = rospy.ServiceProxy('roomID', RoomID)
 # cmd_vel publisher
-vel_pub = rospy.Publisher('/cmd_vel', Twist, queue_size = 1)
+vel_pub = None
 # odom subscriber
 odom_sub = None
 # move_base client
@@ -373,21 +406,28 @@ armor = Armor_communication()
 
 #-------------------------------- State machine classes---------------------------------
 '''
-# define state INITIALIZATION
-Establish the communication with Armor server
-Loads OWL file
-Calls "generate murder" service to start the game
-Retrieves people, weapons and places list from the OWL
+/brief define state INITIALIZATION
+State class that initializes the game by loading OWL file from 
+Armor server and retrieving OWL lists.
+Initialization is a state class inherited from smach.State. 
+It initializes the game by moving the arm to the default pose,
+loading OWL file from Armor server 
+and retrieving OWL lists for people, weapons, and places.
+If the lists are successfully retrieved, it returns 'ready', otherwise, it returns 'err'.
 '''
+
 class Initialization(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['ready','err'])
 
     def execute(self, userdata):
-        global people_list, weapons_list, places_list
+        global people_list, weapons_list, places_list,vel_pub
         
         print('Initializing game:')
-        
+       
+        # makes the robot assuming the default position
+        pose_client("default")
+        print('waiting for armore server')
         # Wait for ARMOR server
         rospy.wait_for_service("armor_interface_srv") 
         # Init OWL file from Armor server
@@ -397,6 +437,7 @@ class Initialization(smach.State):
         armor.load_hints()
         armor.instances_disjoint()
         armor.reason()
+        print('armore init done')
         # retrieve OLW lists (just for debugging)
         people_list = armor.retrieve_class('PERSON')
         weapons_list = armor.retrieve_class('WEAPON')
@@ -411,10 +452,17 @@ class Initialization(smach.State):
         
     
 '''
-# define state EXPLORE
-Retrieves the list of available places
-Randomly choose one
-Reaches place
+/brief define state EXPLORE
+Executes the Exploring state, moving the robot to a room and removing it from the 
+list of unexplored rooms.
+@param userdata The input userdata for the state.
+@return The outcome of the state ('got_to_room' or 'err').
+
+This function moves the robot to the next room in the list of unexplored rooms.
+It sends a goal to the MoveBase action server to move the robot to the first room in the list.
+Once the robot has reached the room, it removes it from the list of unexplored rooms and 
+returns 'got_to_room'.
+If there are no more unexplored rooms, it shuffles the list of rooms and returns 'err'.
 '''
 class Explore(smach.State):
     def __init__(self):
@@ -453,13 +501,18 @@ class Explore(smach.State):
             print("All rooms have been explored!")
             # start again
             rooms = [room1, room2, room3, room4, room5, room6]
+            random.shuffle(rooms)
             return 'err'
   
 '''
-# define state COLLECT HINTS
-Retrieves the list of available places
-Randomly choose one
-Reaches place
+/brief define state COLLECT HINTS
+This function executes the Collecting Hints state of the state machine.
+/param userdata The userdata passed to the state machine
+/return The outcome of the state machine execution ('enough_hints' or 'not_enough')
+
+The function checks if any ID has collected at least three hints. If an ID has collected
+enough hints, it returns the 'enough_hints' outcome. Otherwise, it returns the 'not_enough'
+outcome.
 '''
 class Collect_hints(smach.State):
     def __init__(self):
@@ -469,24 +522,10 @@ class Collect_hints(smach.State):
         global count_hints, vel_pub
         print('COLLECTING HINTS')
         
-        # Go around the room
-        vel = Twist()
-        vel.angular.z = 0.5
-        #velocity.linear.x = 0.1
-        vel_pub.publish(vel)
-        # stop after time
-        time.sleep(40)
-        vel.angular.z = 0.0
-        #velocity.linear.x = 0.0
-        vel_pub.publish(vel)
-        
-        # makes the robot assuming the default position
-        #pose_client("low_reach")
-        
         # check if any ID has 3 hints
         for i in range(0,5):
-            if len(IDs[i]) >= 3:
-                print("id ",i," has ",len(IDs[i])," hints!")
+            if len(IDs[i]) == 3:
+                print("There are enough hints to make an hypothesis:")
                 return 'enough_hints'
         # otherwise
         return 'not_enough'
@@ -495,12 +534,18 @@ class Collect_hints(smach.State):
 
 
 '''
-# define state CHECK CONSISTENCY
-Retrieve people and weapons
-Choose random person an weapon
-Make a new hypothesis
-Check its consistency
-(if inconsistent, delete and make another)
+/brief define state CHECK CONSISTENCY
+This function implements the 'execute' method of a ROS node.
+/param userdata The userdata passed to the state machine
+/return The outcome of the state machine execution ('consistent' or 'inconsistent')
+
+The function iterates through IDs from 0 to 5 and checks which hypothesis has three 
+or more hints. If a hypothesis meets this criteria, it is uploaded to the ARMOR ontology,
+and its consistency is checked by retrieving classes "COMPLETED" and "INCONSISTENT". 
+If the hypothesis is consistent, the respective ID is appended to a list of consistent IDs. 
+If no hypothesis is found to be consistent, the function returns 'inconsistent'. 
+If one or more hypotheses are consistent, the function returns 'consistent' along with 
+the IDs of consistent hypotheses in the userdata.ID attribute.
 '''
 class Make_hypothesis(smach.State):
     def __init__(self):
@@ -508,9 +553,7 @@ class Make_hypothesis(smach.State):
                                     input_keys=['ID'],
                                     output_keys=['ID'])
 
-    def execute(self, userdata):
-        print("MAKE HYPOTHESIS")
-        
+    def execute(self, userdata):        
         global n_hyp
         global ID0, ID1, ID2, ID3, ID4, ID5
         IDs = [ID0,ID1,ID2,ID3,ID4,ID5]
@@ -519,9 +562,10 @@ class Make_hypothesis(smach.State):
         print('MAKING AN HYPOTHESIS:')
         
         cIDs = []   # store consistent IDs
-        for i in range(0,5):
+        for i in range(0,6):
+            print("looking ad ID ",i,"for a complete hypothesis")
             # Check which ID has 3 or more hints
-            if len(IDs[i]) >= 3:
+            if len(IDs[i]) == 3:
                 print("id ",i," has ",len(IDs[i])," hints!")
                 hyp_list = IDs[i]
                 hypothesis_code = str(i)
@@ -550,8 +594,14 @@ class Make_hypothesis(smach.State):
         
     
 '''
-# define state REACH ORACLE
-Reach for the oracle
+/brief define state REACH ORACLE
+/param userdata The userdata passed to the state machine
+/return The outcome of the state machine execution ('failed' or 'reached')
+
+This function It moves the base towards the goal and keeps checking whether 
+the robot has reached the goal. Once the robot has reached the goal, 
+it cancels all the goals and returns 'reached' as output.
+
 '''
 class Reach_oracle(smach.State):
     def __init__(self):
@@ -560,15 +610,16 @@ class Reach_oracle(smach.State):
                              output_keys=['ID'])
 
     def execute(self, userdata):
-        print('REACHING ORACLE')
-        global actual_position, room1, room2, room3, room4, room5, room6, rooms, oracle_position
+        print('REACHING ORACLE')        
+        
+        global actual_position, oracle_position
         # move base 
         goal = MoveBaseGoal()
         goal.target_pose.header.frame_id = 'map'
         
         
         # go to oracle position
-        print('Going to: ',rooms[0])
+        print('Going to the Oracle')
         goal.target_pose.pose.position.x = oracle_position[0]
         goal.target_pose.pose.position.y = oracle_position[1]
         goal.target_pose.pose.orientation.w = 1
@@ -576,8 +627,8 @@ class Reach_oracle(smach.State):
         mb.send_goal(goal)
         
         while True: # do while loop
-            err_pos = math.sqrt(pow(rooms[0][1] - actual_position.y, 2) +
-                            pow(rooms[0][0] - actual_position.x, 2))
+            err_pos = math.sqrt(pow(oracle_position[1] - actual_position.y, 2) +
+                            pow(oracle_position[0] - actual_position.x, 2))
             time.sleep(2)
             if err_pos < 0.5:
                 break
@@ -589,8 +640,17 @@ class Reach_oracle(smach.State):
         
 
 '''
-# define state HYPOTHESIS CHECK
-Check if one of the consistent hypothesis is the right solution
+/brief define state HYPOTHESIS CHECK
+/param userdata The userdata passed to the state machine
+/return The outcome of the state machine execution ('right' or 'wrong')
+
+This function is used to check the correctness of a hypothesis. 
+It takes a hypothesis ID as input, and compares it with the solution 
+returned by an Oracle server. If the hypothesis is correct, it prints 
+the solution in natural language and returns 'right'. If the hypothesis 
+is incorrect, it prints a message stating that the hypothesis is wrong, 
+and returns 'wrong'. The function uses a global variable called 'oracle_client' 
+to call the Oracle server.
 '''
 class Hypothesis_check(smach.State):
     def __init__(self):
@@ -633,19 +693,23 @@ def main():
     rospy.init_node('cluedo_state_machine')
     # Create the top level SMACH state machine
     print("Cluedo state machine is active")
-    
-    # service servers and publishers 
+
     global oracle_client, pose_client, vel_pub, odom_sub, mb, hint
+    # service servers and publishers 
+    # Twist message publisher
+    vel_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
     # Oracle client, checks for solution
     oracle_client = rospy.ServiceProxy('/oracle_solution', Oracle)
     # Arm pose client, moves the robot arm
-    pose_client = rospy.ServiceProxy('arm_pose', Pose)
+    pose_client = rospy.ServiceProxy('/arm_pose', Pose)
     # odom subscriber
     odom_sub = rospy.Subscriber('/odom', Odometry, odom_callback)
     # move_base client
     mb = actionlib.SimpleActionClient('move_base', MoveBaseAction)
     # get well formed hints from Oracle
     hint = rospy.Subscriber('/good_hint', ErlOracle, store_hint)
+    
+    
     
     sm_top = smach.StateMachine(outcomes=['end'])
     sm_top.userdata.ID = []

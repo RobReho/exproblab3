@@ -3,9 +3,9 @@
 * \file move_arm.cpp
 * \brief this node implements the configuration poses of the robot.
 *
-* \author Serena Paneri
+* \author Roberta Reho
 * \version 1.0
-* \date 28/1/2023
+* \date 04/03/2023
 *
 * \details
 *
@@ -25,9 +25,8 @@
 *     None
 *
 * Description: <BR>
-* In this node are implemented the poses that the robot can assume during the game that
-* were previously implemeted thanks to the moveit setup assistant. Also a service is
-# implemented, in a way that the client could decides which pose the robot should assumed.
+* This node implements the callback function of the arm_pose service that moves the robot arm 
+* to a specified position.
 */
 
 #include <ros/ros.h>
@@ -37,13 +36,16 @@
 
 /**
 * \brief Callback function of the arm_pose service.
-* \param req, PoseRequest
-* \param res, PoseResponse
-* \return true
+* \param req: pose request
+* \param res: pose response
+* \return: true
 *
-* This function is the callback function of the arm_pose service in which the robot can 
-* assumes two different poses that are the default one and the low_detection one.
-* This poses can be selected by the client taht in this case is the state machine.
+* This function the callback function of the arm_pose service that moves the robot arm 
+* to a specified position. It uses the MoveIt library and sets various parameters 
+* for planning and execution, including the planner ID, planning time, and goal tolerances.
+* The function returns true if the arm is successfully moved to the specified position 
+* false otherwise.
+*
 */
 bool moveArm(erl3::Pose::Request &req, erl3::Pose::Response &res){
     
@@ -68,14 +70,7 @@ bool moveArm(erl3::Pose::Request &req, erl3::Pose::Response &res){
 }
 
 
-/**
-* \brief Main function of the move_arm node.
-* \param None
-* \return 0
-*
-* This is the main function of the move_arm node in which the node is initialized and
-* the arm_pose service is implemented.
-*/
+
 int main(int argc, char **argv){
     ros::init(argc, argv, "move_arm");
     ros::NodeHandle nh;

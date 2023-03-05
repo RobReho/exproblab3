@@ -1,11 +1,11 @@
 /** @package erl3
 *
 * \file simulation.cpp
-* \brief this node generates and pubblish the hints of the game.
+* \brief this node generates and publishes the hints of the Cluedo game.
 *
-* \author Serena Paneri
+* \author Roberta Reho
 * \version 1.0
-* \date 13/01/2023
+* \date 04/03/2023
 *
 * \details
 *
